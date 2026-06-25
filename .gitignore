@@ -1,0 +1,10 @@
+build/
+reports/
+*.o
+*.cu.o
+.vscode/
+.idea/
+__pycache__/
+*.pyc
+*.bin
+.pytest_cache/

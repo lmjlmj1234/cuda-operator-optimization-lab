@@ -343,3 +343,37 @@ Transformer 层
 ---
 
 > **"写 GPU 代码就像写一首诗 — 你需要同时懂数学、硬件和并行算法。"**
+
+---
+
+## 7. Benchmark 结果
+
+> 实验环境：NVIDIA GeForce RTX 3060, CUDA 13.2, Ubuntu (WSL2)
+> 数据规模：N=4096 rows, D=8192 dims, float32
+> 计时方式：cudaEvent (50 次 warmup + 500 次测量取均值)
+
+| 算子 | Kernel | 耗时 (ms) | vs 基线 | 备注 |
+|------|--------|-----------|---------|------|
+| **Softmax** | naive 3-pass (block=128) | 2.069 | — | 3 次 HBM 遍历 |
+| | online 1-pass (block=256) | 1.227 | **-40.7%** | 1 次 HBM 遍历 |
+| | online+float4 (block=256) | 1.220 | -41.0% | float4 无额外收益 |
+| | warp (dim=32) | 0.017 | — | 小维度专用路径 |
+| **LayerNorm** | sum_sq | 1.219 | — | |
+| | float4 | 1.227 | ~持平 | |
+| | welford | 1.257 | ~持平 | 精度更好 |
+| **RMSNorm** | scalar | 1.203 | — | |
+| | float4 | 1.216 | ~持平 | |
+| **Fused Residual+LN** | scalar | 2.044 | — | 含残差加载 |
+| | float4 | 2.029 | ~持平 | |
+
+### 关键发现
+
+1. **Online Softmax 获得 -41% 真实提速**（2.07→1.22 ms），验证了"合并 HBM 遍历"的理论收益。实际节省比例接近理论值 40%。
+
+2. **Float4 向量化在此场景无收益**。原因是这些 kernel 已经是连续访存，编译器自动生成的标量加载已充分利用带宽。Float4 在更复杂的访存模式（如非对齐、跨步访问）中才有收益。
+
+3. **Welford LayerNorm 在精度上有优势**但速度略慢（+3%）。对于大批量训练需要高精度方差时值得选择。
+
+4. **Fused LayerNorm 耗时约 2.04 ms**，高于单独 LN 的 1.22 ms，因为它多读了 residual 输入。但端到端看，融合省掉了 `x + residual` 这个中间 kernel 的 HBM 读写，如果非融合方案需要两次完整 HBM 遍历 + 一次 LN，则融合仍更优。
+
+5. **Nsight Compute 硬件指标**（SM Throughput、DRAM Throughput、Occupancy）因 WSL2 虚拟化环境无法直通 GPU 性能计数器，需在原生 Linux 上使用 `ncu` 获取。

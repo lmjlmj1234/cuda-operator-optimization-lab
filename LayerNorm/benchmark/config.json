@@ -1,0 +1,34 @@
+{
+  "operator": "LayerNorm",
+  "variants": [
+    {
+      "name": "layernorm_sum_sq",
+      "file": "layernorm_sum_sq.cu",
+      "block_sizes": [128, 256, 512],
+      "default_block": 256,
+      "description": "Two-moment method: E[X] + E[X²]"
+    },
+    {
+      "name": "layernorm_float4",
+      "file": "layernorm_float4.cu",
+      "block_sizes": [128, 256],
+      "default_block": 256,
+      "description": "Float4 vectorized loads/stores"
+    },
+    {
+      "name": "layernorm_welford",
+      "file": "layernorm_welford.cu",
+      "block_sizes": [128, 256],
+      "default_block": 256,
+      "description": "Welford online variance + warp shuffle"
+    }
+  ],
+  "problem_sizes": [
+    {"N": 4096, "D": 8192, "label": "default"}
+  ],
+  "benchmark_params": {
+    "warmup": 50,
+    "iterations": 500,
+    "eps": 1e-5
+  }
+}

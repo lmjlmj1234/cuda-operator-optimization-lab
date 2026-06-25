@@ -1,0 +1,27 @@
+{
+  "operator": "FusedResidualLN",
+  "variants": [
+    {
+      "name": "fused_residual_layernorm",
+      "file": "fused_residual_layernorm.cu",
+      "block_sizes": [128, 256],
+      "default_block": 256,
+      "description": "Fused residual add + layernorm (scalar)"
+    },
+    {
+      "name": "fused_residual_layernorm_float4",
+      "file": "fused_residual_layernorm_float4.cu",
+      "block_sizes": [128, 256],
+      "default_block": 256,
+      "description": "Fused residual add + layernorm (float4)"
+    }
+  ],
+  "problem_sizes": [
+    {"N": 4096, "D": 8192, "label": "default"}
+  ],
+  "benchmark_params": {
+    "warmup": 50,
+    "iterations": 500,
+    "eps": 1e-5
+  }
+}

@@ -8,3 +8,7 @@ __pycache__/
 *.pyc
 *.bin
 .pytest_cache/
+reports/ncu/*.ncu-rep
+reports/nsys/*.nsys-rep
+reports/nsys/*.sqlite
+reports/benchmark/*.log

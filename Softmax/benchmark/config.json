@@ -1,0 +1,38 @@
+{
+  "operator": "Softmax",
+  "variants": [
+    {
+      "name": "softmax_naive",
+      "file": "softmax_naive.cu",
+      "block_sizes": [128, 256, 512],
+      "default_block": 128,
+      "passes": 3,
+      "description": "3-pass baseline: max → exp+sum → normalize"
+    },
+    {
+      "name": "softmax_online",
+      "file": "softmax_online.cu",
+      "block_sizes": [128, 256, 512],
+      "default_block": 256,
+      "vec_sizes": [1, 4],
+      "passes": 1,
+      "description": "Online 1-pass with optional float4 vectorization"
+    },
+    {
+      "name": "softmax_warp",
+      "file": "softmax_warp.cu",
+      "block_size": 32,
+      "max_dim": 32,
+      "description": "Warp shuffle for dim <= 32"
+    }
+  ],
+  "problem_sizes": [
+    {"N": 4096, "D": 8192, "label": "default"},
+    {"N": 4096, "D": 128, "label": "small_dim"},
+    {"N": 4096, "D": 32768, "label": "large_dim"}
+  ],
+  "benchmark_params": {
+    "warmup": 50,
+    "iterations": 500
+  }
+}

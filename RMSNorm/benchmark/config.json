@@ -1,0 +1,27 @@
+{
+  "operator": "RMSNorm",
+  "variants": [
+    {
+      "name": "rmsnorm_kernel",
+      "file": "rmsnorm_kernel.cu",
+      "block_sizes": [128, 256, 512],
+      "default_block": 256,
+      "description": "Scalar version"
+    },
+    {
+      "name": "rmsnorm_float4",
+      "file": "rmsnorm_float4.cu",
+      "block_sizes": [128, 256],
+      "default_block": 256,
+      "description": "Float4 vectorized version"
+    }
+  ],
+  "problem_sizes": [
+    {"N": 4096, "D": 8192, "label": "default"}
+  ],
+  "benchmark_params": {
+    "warmup": 50,
+    "iterations": 500,
+    "eps": 1e-5
+  }
+}

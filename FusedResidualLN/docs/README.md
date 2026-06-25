@@ -27,7 +27,7 @@ output.
 - Pass 2: Reload `x + residual`, normalize with gamma/beta, write output
 
 **Shared memory workaround for nvcc bug:** mean/rstd passed through `__shared__ float sm_mean, sm_rstd`
-to avoid compiler register aliasing (see docs/debug_log.md).
+to avoid compiler register aliasing (see ../../docs/debug_log.md).
 
 ---
 

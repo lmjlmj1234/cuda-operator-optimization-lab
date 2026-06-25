@@ -188,7 +188,7 @@ KernelName/
 - 为什么不用其他归约方案
 - 为什么用这个算法而不是另一个
 
-**决策去重规则**：如果某个决策理由跨多个 kernel 通用（如 block size 与 occupancy 的权衡），应当在 [Performance_Playbook.md](../Performance_Playbook.md) 或 shared_docs/ 中的共享文档中记录一次，kernel 文档中直接交叉引用。避免 30 个 kernel 各维护一份相同的分析。
+**决策去重规则**：如果某个决策理由跨多个 kernel 通用（如 block size 与 occupancy 的权衡），应当在 [Performance_Playbook.md](Performance_Playbook.md) 或 shared_docs/ 中的共享文档中记录一次，kernel 文档中直接交叉引用。避免 30 个 kernel 各维护一份相同的分析。
 
 ### docs/nsight_analysis.md
 

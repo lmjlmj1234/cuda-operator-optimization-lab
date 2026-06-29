@@ -1,5 +1,7 @@
 build/
-reports/
+reports/ncu/
+reports/nsys/
+reports/benchmark/
 *.o
 *.cu.o
 .vscode/
